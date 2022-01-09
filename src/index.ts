@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/browser';
+import packageJson from '../package.json';
 import { GameOperate } from './modules/game/GameOperate';
 
 const onVersionLoaded = () => {
@@ -25,6 +27,18 @@ const startUp = () => {
     Laya.stage.frameRate = Laya.Stage.FRAME_SLOW;
     Laya.stage.bgColor = '#FFFFFF';
     GameOperate.inst.init();
+
+    Sentry.init({
+        dsn: 'http://40e57534183347e6bd61ab887d5425d0@192.168.1.30:9000/3',
+        tracesSampleRate: 1.0,
+        environment: 'development',
+        release: packageJson.version,
+    });
+    Sentry.captureMessage('Hello, world!');
+    Sentry.captureException(new Error('Good bye'));
+    Sentry.captureEvent({
+        message: 'Manual',
+    });
 
     // 激活资源版本控制
     Laya.ResourceVersion.enable(

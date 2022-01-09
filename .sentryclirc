@@ -1,0 +1,7 @@
+[defaults]
+url = http://192.168.1.30:9000/
+org=sentry
+project=sentry-webpack-example
+
+[auth]
+token=b48c0077fb0548a3a21d731fd0d12bca6caa229b504d441a9798e544f9e8f3b7

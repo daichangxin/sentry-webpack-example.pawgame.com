@@ -3,6 +3,8 @@ const os = require('os');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackResVersionPlugin = require('./webpack-res-version');
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const packageJson = require('../package.json');
 
 function resolve(name) {
     return path.join(__dirname, '..', name);
@@ -48,7 +50,7 @@ const webpackConfig = {
         },
         compress: true,
         host: 'local-ipv4',
-        port: 9000,
+        port: 9001,
         open: true,
         hot: true, // default: true
     },
@@ -56,7 +58,7 @@ const webpackConfig = {
         libs: [
             resolve('node_modules/proxy-polyfill'),
             'whatwg-fetch',
-            resolve('node_modules/@pawgame/js-layabox-core'),
+            resolve('node_modules/@pawgame/layabox-core'),
             resolve('bin/ext/fairygui.js'),
         ],
         bundle: {
@@ -97,10 +99,18 @@ const webpackConfig = {
                 output_path: resolve('outputs/res'),
                 outputs_path: resolve('outputs'),
             }),
+        new SentryWebpackPlugin({
+            release: packageJson.version,
+            include: './outputs/',
+            ignore: ['node_modules'],
+        }),
     ].filter(Boolean),
     optimization: {
         minimize: false,
         minimizer,
+        runtimeChunk: {
+            name: (entrypoint) => `runtime~${entrypoint.name}`,
+        },
     },
 };
 
